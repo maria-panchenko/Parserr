@@ -1,22 +1,24 @@
 import requests
 from bs4 import BeautifulSoup
 
+f = open("personal.txt", "w")
+f.close()
 def parse():
-    url = "https://auto.drom.ru/"  # URL сайта для парсинга
 
-    # Отправляем GET-запрос на сайт
-    padge = requests.get(url)
+ url = 'https://omgtu.ru/ecab/persons/index.php?b=14'
+ response = requests.get(url)
+ soup = BeautifulSoup(response.text, "lxml")
+ block = soup.findAll('div', style="padding: 5px; font-size: 120%;")
 
-    # Инициализируем объект BeautifulSoup и передаем ответ сервера в качестве параметра
-    soup = BeautifulSoup(padge.text, "html.parser")
+ #page = requests.get(url)
+ #print(page.status_code)
 
-    # Ищем все элементы с классом "css-xb5nz8 e1huvdhj1" и записываем содержимое в список
-    block = soup.findAll('a', class_='css-xb5nz8 e1huvdhj1')
+ doc = ''
+ with open("personal.txt", "w", encoding="utf-8") as f:
+     # Записываем каждый элемент списка block в файл построчно
+     for personal in block:
+         if personal.find('a'):  # находим тег
+            doc = personal.text.strip().replace('\xa0', '')
+            f.write(doc + "\n")
+            print(doc)
 
-    # Открываем файл для записи
-    with open("drom.txt", "w", encoding="utf-8") as f:
-        # Записываем каждый элемент списка block в файл построчно
-        for result in block:
-            description = result.text.strip().replace('\xa0', '')
-            f.write(description + "\n")
-parse()
